@@ -1,7 +1,8 @@
 const express = require("express");
-const app = express();
 const exphbs = require("express-handlebars");
+const fetch = require("node-fetch");
 
+const app = express();
 app.set("view engine", "handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: false }));
 app.use(express.json());
@@ -12,8 +13,22 @@ app.get("/", (req, res) => {
 });
 
 app.post("/weather", (req, res) => {
-  const cityName = req.body.cityName;
-  res.status(200).send(cityName);
+  const cityName1 = req.body.cityName;
+  const API_KEY = require("./sources/keys.json").API_KEY;
+  fetch(
+    `https://api.openweathermap.org/data/2.5/weather?q=${cityName1}&APPID=${API_KEY}`
+  )
+    .then((respond) => respond.json())
+    .then((json) => {
+      const kelvin = json.main.temp;
+      const celsius = Math.round(kelvin - 273.15);
+      res.render("index", {
+        weatherText: `${cityName1}: ${celsius}`,
+      });
+    })
+    .catch((error) => {
+      res.render("index", { weatherText: "City is not found!" });
+    });
 });
 
-app.listen(3000);
+app.listen(5000);
