@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 
 app.post("/weather", (req, res) => {
   const cityName1 = req.body.cityName;
-  const API_KEY = require("./sources/keys.json").API_KEY;
+ const { API_KEY } = require("./sources/keys.json");
   fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${cityName1}&APPID=${API_KEY}`
   )
